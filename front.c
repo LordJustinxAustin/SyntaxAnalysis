@@ -43,7 +43,18 @@ void error();
 
 /*main*/
 
-
+int main(){
+  int main(){
+  if ((in_fp = fopen("front.in", "r")) == NULL)
+f    printf("ERROR: failed to open input file \n");
+  else{
+    getChar();
+    do{
+      lex();
+      expr();
+    } while (nextToken != EOF);
+  }
+}
   
 /*--------------------------------------------------*/
   
