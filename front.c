@@ -46,7 +46,7 @@ void error();
 int main(){
   int main(){
   if ((in_fp = fopen("front.in", "r")) == NULL)
-f    printf("ERROR: failed to open input file \n");
+    printf("ERROR: failed to open input file \n");
   else{
     getChar();
     do{
@@ -93,7 +93,7 @@ int lookup(char ch){
       break;
     }
     return nextToken;
-}
+}//end of switch
   
 /*--------------------------------------------------*/
   
@@ -106,7 +106,7 @@ int lookup(char ch){
   }
   else
   printf("Error: lexeme is too long \n");
-}
+}//end of function
   
 /*--------------------------------------------------*/  
   
@@ -123,7 +123,7 @@ int lookup(char ch){
     }
     else
     charClass = EOF;
-}
+}//end of function
   
 /*--------------------------------------------------*/
   
@@ -133,7 +133,7 @@ int lookup(char ch){
 void getNonBlank(){  
   while (isspace(nextChar))
   getChar();
-}
+}//end of function
   
 /*--------------------------------------------------*/
   
@@ -174,14 +174,17 @@ int lex(){
     lexeme[2] = 'F';
     lexeme[3] = 0;
     break;
-  } /* End of switch */
+  } //end of switch
   printf("Next token is: %d, Next lexeme is %s\n",
   nextToken, lexeme);
   return nextToken;
-} /* End of function lex */
+} //end of function
   
 /*--------------------------------------------------*/
   
+  /*parses strings in the language...
+  rule:
+    <expr> -> <term> {(+ | -) <term>}*/
   
 void expr(){
   printf("Enter <expr>\n");
@@ -191,7 +194,7 @@ void expr(){
     term();
   }
   printf("Exit <expr>\n");
-} 
+} //end of function
 
 /*--------------------------------------------------*/
   
@@ -204,6 +207,31 @@ void term(){
     factor();
   }
   printf("Exit <term>\n");
-} 
+} //end of function
 
 /*--------------------------------------------------*/
+  
+void factor(){
+  printf("Enter <factor>\n");
+  if (nextToken == IDENT || nextToken == INT_LIT)
+  // Get the next token 
+  lex();
+  else{
+    if (nextToken == LEFT_PAREN){
+      lex();
+      expr();
+      if (nextToken == RIGHT_PAREN)
+      lex();
+      else
+      error();
+    } 
+      else
+      error();
+    } /* End of else */
+    printf("Exit <factor>\n");;
+} //end of function
+
+
+void error(){
+  //printf("error function called\n");
+}
