@@ -14,6 +14,10 @@ int charClass;
 
 char lexeme [100];
 
+char previouslexeme [100];
+
+char errorstring[100];
+
 char * expression = NULL;
 
 int temp;
