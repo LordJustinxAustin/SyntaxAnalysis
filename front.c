@@ -1,23 +1,35 @@
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 
-/*Global Declarations ----- Variables*/
-
-int charClass;
-
-char lexeme [100];
+//Global Declarations ----- Variables
 
 char nextChar;
-
-int lexLen;
-
-int token;
 
 int nextToken;
 
 FILE *in_fp, *fopen();
 
-/*Function Declarations*/
+int charClass;
+
+char lexeme [100];
+
+char * expression = NULL;
+
+int temp;
+
+int lexLen;
+
+size_t len = 0;
+
+ssize_t read;
+
+int current;
+
+int token;
+
+
+//Function Declarations
 void addChar();
 void getChar();
 void getNonBlank();
@@ -26,8 +38,7 @@ void expr();
 void factor();
 void term();
 void error();
-
-/*Character classes*/
+//Character classes
 #define LETTER 0
 #define DIGIT 1
 #define UNKNOWN 99
@@ -43,24 +54,39 @@ void error();
 
 /*main*/
 
-int main(){
-  int main(){
-  if ((in_fp = fopen("front.in", "r")) == NULL)
-    printf("ERROR: failed to open input file \n");
+int main(int argc, char *argv[]) {
+  if (argc == 2){
+    if ((in_fp = fopen(argv[1], "r")) == NULL)
+      printf("ERROR - cannot open front.in \n");
+    else {
+      while ((read = getline(&expression, &len, in_fp)) != -1) {
+        printf("\nRetrieved line of length %zu :\n", read-1);
+        if(read-1 != 0){
+          printf("Analysis for the expression: %s", expression);
+          memset(errorstring,0,sizeof(errorstring));
+          current = 0;
+          getChar();
+          if (expression != NULL){
+            do {
+              lex();
+              expr();
+            } while (nextToken != EOF);
+          }
+        }else{
+          printf("This was a blank line\n");
+        }
+      }
+    }
+  }
   else{
-    getChar();
-    do{
-      lex();
-      expr();
-    } while (nextToken != EOF);
+    printf("error in reading filename\n");
   }
 }
   
 /*--------------------------------------------------*/
   
   
-/* lookup - a function to lookup operators and parentheses
-and return the token */
+// lookup - a function to lookup operators and parentheses and return the token 
 int lookup(char ch){
   switch (ch){
     case '(':
@@ -95,25 +121,56 @@ int lookup(char ch){
     return nextToken;
 }//end of switch
   
+/*--------------------------------------------------*/ 
+
+  
+void factor(){
+  printf("Enter <factor>\n");
+  if (nextToken == IDENT || nextToken == INT_LIT)
+  // Get the next token 
+  lex();
+  else{
+    if (nextToken == LEFT_PAREN){
+      lex();
+      expr();
+      if (nextToken == RIGHT_PAREN)
+      lex();
+      else
+      error();
+    } 
+      else
+      error();
+    } /* End of else */
+    printf("Exit <factor>\n");;
+} //end of function
+
 /*--------------------------------------------------*/
-  
-  
-   /* this function adds nextChar to lexeme*/
- void addChar(){
-   if (lexLen <= 98){
-    lexeme[lexLen++] =nextChar;
-    lexeme[lexLen] =0;
-  }
-  else
-  printf("Error: lexeme is too long \n");
-}//end of function
-  
+
+  //this function gets the next character of input and determines a class
+void getCharOld() {
+  if ((nextChar = getc(in_fp)) != EOF) {
+    if (isalpha(nextChar))
+    charClass = LETTER;
+    else if (isdigit(
+      nextChar))
+      charClass = DIGIT;
+      else charClass = UNKNOWN;
+    }
+    else
+    charClass = EOF;
+}
+
 /*--------------------------------------------------*/  
-  
-  
-     /* this function is used to get the next character of input */
-  void getChar(){
-      if ((nextChar = getc(in_fp)) != EOF){
+
+
+     // this function is used to get the next character of input 
+  void getChar() {
+  if (expression[current] != '\n' && expression[current] != EOF) {
+    nextChar = expression[current];
+    errorstring[current] = nextChar;
+    temp = current;
+    current++;
+
     if (isalpha(nextChar))
     charClass = LETTER;
     else if (isdigit(
@@ -125,10 +182,24 @@ int lookup(char ch){
     charClass = EOF;
 }//end of function
   
+
 /*--------------------------------------------------*/
   
   
-  /*function will return a non white space character*/
+   // this function adds nextChar to lexeme
+ void addChar(){
+   if (lexLen <= 98){
+    lexeme[lexLen++] =nextChar;
+    lexeme[lexLen] =0;
+  }
+  else
+  printf("Error: lexeme is too long \n");
+}//end of function
+   
+/*--------------------------------------------------*/
+  
+  
+  //function will return a non white space character
   
 void getNonBlank(){  
   while (isspace(nextChar))
@@ -138,7 +209,7 @@ void getNonBlank(){
 /*--------------------------------------------------*/
   
   
-  /*lexical analyzer for arithmetic expressions*/
+  //lexical analyzer for arithmetic expressions
 
 int lex(){
   lexLen = 0;
@@ -166,7 +237,7 @@ int lex(){
     lookup(nextChar);
     getChar();
     break;
-    /* EOF */
+    // EOF case
     case EOF:
     nextToken = EOF;
     lexeme[0] = 'E';
@@ -182,7 +253,7 @@ int lex(){
   
 /*--------------------------------------------------*/
   
-  /*parses strings in the language...
+  /*parses strings in the necesary language...
   rule:
     <expr> -> <term> {(+ | -) <term>}*/
   
@@ -198,7 +269,6 @@ void expr(){
 
 /*--------------------------------------------------*/
   
-  
 void term(){
   printf("Enter <term>\n");
   factor();
@@ -210,28 +280,17 @@ void term(){
 } //end of function
 
 /*--------------------------------------------------*/
-  
-void factor(){
-  printf("Enter <factor>\n");
-  if (nextToken == IDENT || nextToken == INT_LIT)
-  // Get the next token 
-  lex();
-  else{
-    if (nextToken == LEFT_PAREN){
-      lex();
-      expr();
-      if (nextToken == RIGHT_PAREN)
-      lex();
-      else
-      error();
-    } 
-      else
-      error();
-    } /* End of else */
-    printf("Exit <factor>\n");;
-} //end of function
 
-
+//standard error function
 void error(){
-  //printf("error function called\n");
+  if (strcmp(lexeme, "EOF") == 0){
+    printf("    Error function called\n");
+    printf("    Error expression %s\n", errorstring);
+    printf("    Error in: %s\n", previouslexeme);
+  }
+  else{
+    printf("    Error function called\n");
+    printf("    Error expression %s\n", errorstring);
+    printf("    Error in: %s\n", lexeme);
+  }
 }
