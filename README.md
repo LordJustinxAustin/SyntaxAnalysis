@@ -24,22 +24,22 @@ Description: fixed the main function
 
 commit 3
 
-URL:
+URL:https://github.com/LordJustinxAustin/SyntaxAnalysis/commit/634faade4ff6128db1469691cdec3d82d5d58f03
 Date: 3/24
 Time: 1:14PM
-Description:
+Description: moved around some of the functions because i was recieivng errors and went through and added comments
 
 commit 4
 
-URL:
+URL:https://github.com/LordJustinxAustin/SyntaxAnalysis/commit/985f994b04ad7900f47f56c5d401f1492b320d5c
 Date: 3/24
 Time: 2:05PM
-Description:
+Description: created the in file for front.c
 
 
 commit 5
 
-URL:
+URL:https://github.com/LordJustinxAustin/SyntaxAnalysis/commit/a79c103c84a2cd3ec5a71eddbe07f932df5711f6
 Date: 3/24
 Time: 3:05PM
-Description:
+Description:in file wasnt compatible with code, had to rearrange a multitude of times for it to accept
